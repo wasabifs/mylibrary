@@ -1,0 +1,256 @@
+.root {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* ── Header ── */
+.header {
+  padding: 36px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.headerTop {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.logo {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.logoSub {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── Search ── */
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--text-faint);
+  pointer-events: none;
+  font-weight: 300;
+}
+
+.searchInput {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 13px 40px 13px 42px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 300;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+.searchInput:focus {
+  border-color: var(--accent-dim);
+}
+
+.searchInput::placeholder {
+  color: var(--text-faint);
+}
+
+/* hide native clear button */
+.searchInput::-webkit-search-cancel-button { display: none; }
+
+.clearBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+/* ── Stats ── */
+.stats {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.statsDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.statsQuery {
+  color: var(--accent-dim);
+}
+
+/* ── Main ── */
+.main {
+  padding: 0 12px 80px;
+}
+
+/* ── Book Group ── */
+.bookGroup {
+  border-bottom: 1px solid var(--border);
+  animation: fadeUp 0.25s ease both;
+}
+
+.bookHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 8px 10px;
+}
+
+.bookCover {
+  width: 36px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.bookCoverPlaceholder {
+  width: 36px;
+  height: 50px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.bookInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookTitle {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.bookMeta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bookMeta span::after {
+  content: '·';
+  margin-left: 6px;
+  color: var(--text-faint);
+}
+
+.bookMeta span:last-child::after {
+  display: none;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.tag {
+  font-size: 10px;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 1px 5px;
+  letter-spacing: 0.05em;
+}
+
+.bookCount {
+  font-size: 11px;
+  color: var(--accent-dim);
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ── Highlights ── */
+.highlights {
+  padding: 0 8px 16px;
+}
+
+.card {
+  background: var(--card);
+  border-left: 2px solid var(--accent-dim);
+  border-radius: 0 4px 4px 0;
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 2;
+  color: #c4bcac;
+  white-space: pre-wrap;
+}
+
+.mark {
+  background: rgba(201, 169, 110, 0.22);
+  color: var(--accent);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ── States ── */
+.stateMsg {
+  text-align: center;
+  padding: 80px 24px;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 2.2;
+}
+
+.stateIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.stateSmall {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 8px;
+}
