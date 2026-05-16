@@ -1,10 +1,10 @@
-import { getAllBooksWithHighlights } from '@/lib/notion'
+import { getAllBooksWithHighlights, type Book } from '@/lib/notion'
 import LibraryClient from '@/components/LibraryClient'
 
 export const revalidate = 600
 
 export default async function Home() {
-  let books = []
+  let books: Book[] = []
   let error = ''
   try {
     books = await getAllBooksWithHighlights()
