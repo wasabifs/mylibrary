@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import type { Book } from '@/lib/notion'
+import SyncButton from './SyncButton'
 import styles from './LibraryClient.module.css'
 
 function highlightText(text: string, query: string) {
@@ -56,8 +57,11 @@ export default function LibraryClient({ books, error }: { books: Book[]; error: 
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerTop}>
-          <span className={styles.logo}>MyLibrary</span>
-          <span className={styles.logoSub}>節錄重點</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span className={styles.logo}>MyLibrary</span>
+            <span className={styles.logoSub}>節錄重點</span>
+          </div>
+          <SyncButton />
         </div>
         <div className={styles.searchWrap}>
           <span className={styles.searchIcon}>⌕</span>
@@ -99,7 +103,6 @@ export default function LibraryClient({ books, error }: { books: Book[]; error: 
 
             return (
               <div key={book.pageId} className={styles.bookGroup}>
-                {/* Book header */}
                 <div className={styles.bookHeader}>
                   {book.cover ? (
                     <img
@@ -133,7 +136,6 @@ export default function LibraryClient({ books, error }: { books: Book[]; error: 
                   <div className={styles.bookCount}>{hls.length} 條</div>
                 </div>
 
-                {/* Highlights */}
                 <div className={styles.highlights}>
                   {hls.map((h, i) => (
                     <div key={i} className={styles.card}>
