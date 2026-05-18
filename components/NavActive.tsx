@@ -1,4 +1,5 @@
 'use client'
+
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -9,8 +10,9 @@ export default function NavActive() {
     document.querySelectorAll('.nav-item').forEach(el => {
       const href = el.getAttribute('href') || ''
       const isActive =
-        href === '/' ? pathname === '/' :
-        pathname.startsWith(href)
+        href === '/'
+          ? pathname === '/'
+          : pathname.startsWith(href)
       el.classList.toggle('active', isActive)
     })
   }, [pathname])
