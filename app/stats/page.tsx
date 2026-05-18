@@ -1,11 +1,23 @@
-import { getReadingStats } from '@/lib/notion'
+import { getReadingStats, type ReadingStats } from '@/lib/notion'
 import StatsClient from '@/components/StatsClient'
 import SyncButton from '@/components/SyncButton'
 
 export const dynamic = 'force-dynamic'
 
+const emptyStats: ReadingStats = {
+  totalBooks: 0, totalFinished: 0, totalReading: 0,
+  totalUnread: 0, totalHighlightBooks: 0, maxHighlightBook: null,
+  byYear: [], byTag: [], byRating: [],
+  avgDaysPerBook: 0, longestBook: null, fastestBook: null, mostTagged: null,
+}
+
 export default async function StatsPage() {
-  const stats = await getReadingStats()
+  let stats: ReadingStats = emptyStats
+  try {
+    stats = await getReadingStats()
+  } catch (e) {
+    // silently fail — show empty state
+  }
 
   return (
     <div style={{ minHeight: '100vh' }}>
