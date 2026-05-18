@@ -2,7 +2,7 @@ import { getAllExcerptsFlat } from '@/lib/notion'
 import DailyClient from '@/components/DailyClient'
 import SyncButton from '@/components/SyncButton'
 
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export default async function DailyPage() {
   const excerpts = await getAllExcerptsFlat()
@@ -20,7 +20,7 @@ export default async function DailyPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
             <span style={{ fontFamily: 'Noto Serif TC, serif', fontSize: 20, color: '#c9a96e' }}>每日精選</span>
-            <span style={{ fontSize: 10, color: '#847a68', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Daily</span>
+            <span style={{ fontSize: 10, color: '#9a9080', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Daily</span>
           </div>
           <SyncButton />
         </div>
