@@ -1,11 +1,11 @@
-import { getAllExcerptsFlat } from '@/lib/notion'
-import DailyClient from '@/components/DailyClient'
+import { getReadingStats } from '@/lib/notion'
+import StatsClient from '@/components/StatsClient'
 import SyncButton from '@/components/SyncButton'
 
 export const revalidate = 3600
 
-export default async function DailyPage() {
-  const excerpts = await getAllExcerptsFlat()
+export default async function StatsPage() {
+  const stats = await getReadingStats()
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -19,13 +19,13 @@ export default async function DailyPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-            <span style={{ fontFamily: 'Noto Serif TC, serif', fontSize: 20, color: '#c9a96e' }}>每日精選</span>
-            <span style={{ fontSize: 10, color: '#847a68', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Daily</span>
+            <span style={{ fontFamily: 'Noto Serif TC, serif', fontSize: 20, color: '#c9a96e' }}>統計</span>
+            <span style={{ fontSize: 10, color: '#847a68', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Stats</span>
           </div>
           <SyncButton />
         </div>
       </div>
-      <DailyClient excerpts={excerpts} />
+      <StatsClient stats={stats} />
     </div>
   )
 }
