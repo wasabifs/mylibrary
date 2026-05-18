@@ -2,7 +2,7 @@ import { getReadingStats } from '@/lib/notion'
 import StatsClient from '@/components/StatsClient'
 import SyncButton from '@/components/SyncButton'
 
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 export default async function StatsPage() {
   const stats = await getReadingStats()
@@ -20,7 +20,7 @@ export default async function StatsPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
             <span style={{ fontFamily: 'Noto Serif TC, serif', fontSize: 20, color: '#c9a96e' }}>統計</span>
-            <span style={{ fontSize: 10, color: '#847a68', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Stats</span>
+            <span style={{ fontSize: 10, color: '#9a9080', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Stats</span>
           </div>
           <SyncButton />
         </div>
