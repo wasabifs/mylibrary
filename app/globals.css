@@ -11,8 +11,8 @@
   --accent: #c9a96e;
   --accent-dim: #7a6340;
   --text: #e4dccb;
-  --text-dim: #847a68;
-  --text-faint: #3e3a32;
+  --text-dim: #9a9080;      /* was #847a68 — deepened */
+  --text-faint: #6b6355;    /* was #3e3a32 — deepened significantly */
   --card: #131210;
   --nav-h: 60px;
 }
@@ -57,7 +57,7 @@ body {
   justify-content: center;
   gap: 3px;
   text-decoration: none;
-  color: var(--text-faint);
+  color: var(--text-faint);   /* now #6b6355 — more readable */
   transition: color 0.15s;
 }
 
