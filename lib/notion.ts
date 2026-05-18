@@ -41,7 +41,9 @@ export interface ReadingStats {
   totalBooks: number
   totalFinished: number
   totalReading: number
+  totalUnread: number
   totalHighlightBooks: number
+  maxHighlightBook: { title: string; count: number } | null
   byYear: { year: string; count: number }[]
   byTag: { tag: string; count: number }[]
   byRating: { rating: string; count: number }[]
@@ -101,6 +103,16 @@ async function queryAllPages(filter?: any): Promise<any[]> {
     cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined
   } while (cursor)
   return pages
+}
+
+// ─── Rating star count helper ───────────────────────────────────────────────
+// Counts the number of filled stars in a rating string like "★★★☆☆"
+function countStars(rating: string): number {
+  // Count filled star characters (★ \u2605) or any common filled star variants
+  const filled = (rating.match(/★/g) || []).length
+  if (filled > 0) return filled
+  // Fallback: count non-empty chars that might represent stars
+  return rating.replace(/[☆\s]/g, '').length
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────
@@ -222,16 +234,17 @@ export async function getReadingStats(): Promise<ReadingStats> {
   const finished = books.filter(b => b.finishDate)
   const totalFinished = finished.length
   const totalReading = books.filter(b => b.startDate && !b.finishDate).length
+  const totalUnread = books.filter(b => !b.startDate).length
   const totalHighlightBooks = books.filter(b => b.hasNote).length
 
-  // By year (finish date)
+  // By year (finish date) — sorted newest first (desc)
   const yearMap: Record<string, number> = {}
   for (const b of finished) {
     const year = b.finishDate!.slice(0, 4)
     yearMap[year] = (yearMap[year] || 0) + 1
   }
   const byYear = Object.entries(yearMap)
-    .sort((a, b) => a[0].localeCompare(b[0]))
+    .sort((a, b) => b[0].localeCompare(a[0])) // desc: newest first
     .map(([year, count]) => ({ year, count }))
 
   // By tag
@@ -245,7 +258,7 @@ export async function getReadingStats(): Promise<ReadingStats> {
     .sort((a, b) => b[1] - a[1])
     .map(([tag, count]) => ({ tag, count }))
 
-  // By rating
+  // By rating — sorted by star count descending
   const ratingMap: Record<string, number> = {}
   for (const b of books) {
     if (b.rating) {
@@ -253,7 +266,7 @@ export async function getReadingStats(): Promise<ReadingStats> {
     }
   }
   const byRating = Object.entries(ratingMap)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => countStars(b[0]) - countStars(a[0])) // most stars first
     .map(([rating, count]) => ({ rating, count }))
 
   // Avg days, longest, fastest
@@ -281,11 +294,19 @@ export async function getReadingStats(): Promise<ReadingStats> {
 
   const mostTagged = byTag[0] ?? null
 
+  // Book with most highlights (requires highlight count — approximate via hasNote books)
+  // We compute this from the highlight counts we already gather in getAllBooksWithHighlights,
+  // but to avoid extra API calls here we leave maxHighlightBook as null unless already available.
+  // To get real data, use getReadingStatsWithHighlights (future).
+  const maxHighlightBook = null
+
   return {
     totalBooks,
     totalFinished,
     totalReading,
+    totalUnread,
     totalHighlightBooks,
+    maxHighlightBook,
     byYear,
     byTag,
     byRating,
