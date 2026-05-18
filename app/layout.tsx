@@ -21,7 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body>
         <NavActive />
@@ -38,6 +41,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <a href="/" className="nav-item">
             <span className="nav-icon">❝</span>
             <span className="nav-label">節錄</span>
+          </a>
+          <a href="/daily" className="nav-item">
+            <span className="nav-icon">✦</span>
+            <span className="nav-label">每日</span>
+          </a>
+          <a href="/stats" className="nav-item">
+            <span className="nav-icon">◈</span>
+            <span className="nav-label">統計</span>
           </a>
         </nav>
       </body>
