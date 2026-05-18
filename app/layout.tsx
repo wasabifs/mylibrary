@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="nav-icon">◎</span>
             <span className="nav-label">閱讀中</span>
           </a>
-          <a href="/" className="nav-item">
+          <a href="/excerpts" className="nav-item">
             <span className="nav-icon">❝</span>
             <span className="nav-label">節錄</span>
           </a>
