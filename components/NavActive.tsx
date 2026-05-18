@@ -9,8 +9,11 @@ export default function NavActive() {
   useEffect(() => {
     document.querySelectorAll('.nav-item').forEach(el => {
       const href = el.getAttribute('href') || ''
-      const isActive =
-        href === '/'
+      // exact match for these routes, prefix match for others
+      const exactRoutes = ['/daily', '/stats', '/excerpts', '/reading']
+      const isActive = exactRoutes.includes(href)
+        ? pathname === href
+        : href === '/'
           ? pathname === '/'
           : pathname.startsWith(href)
       el.classList.toggle('active', isActive)
