@@ -3,7 +3,7 @@ import { Client } from '@notionhq/client'
 export const notion = new Client({ auth: process.env.NOTION_TOKEN })
 export const DB_ID = process.env.NOTION_DB_ID!
 
-// ─── Types ───────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────
 
 export interface Book {
   pageId: string
@@ -28,10 +28,34 @@ export interface Book {
   hasReview: boolean
 }
 
-// ─── Helpers ─────────────────────────────────────────────
+export interface ExcerptFlat {
+  bookTitle: string
+  bookCover: string | null
+  author: string
+  rating: string
+  finishDate: string | null
+  text: string
+}
+
+export interface ReadingStats {
+  totalBooks: number
+  totalFinished: number
+  totalReading: number
+  totalHighlightBooks: number
+  byYear: { year: string; count: number }[]
+  byTag: { tag: string; count: number }[]
+  byRating: { rating: string; count: number }[]
+  avgDaysPerBook: number
+  longestBook: { title: string; days: number } | null
+  fastestBook: { title: string; days: number } | null
+  mostTagged: { tag: string; count: number } | null
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function parsePage(page: any): Omit<Book, 'highlights'> {
   const props = page.properties
+
   const title = props['Name']?.title?.map((t: any) => t.plain_text).join('') || '未命名'
   const subtitle = props['副標']?.rich_text?.map((t: any) => t.plain_text).join('') || ''
   const author = props['作者']?.rich_text?.map((t: any) => t.plain_text).join('') || ''
@@ -54,7 +78,13 @@ function parsePage(page: any): Omit<Book, 'highlights'> {
   if (!cover && page.icon?.type === 'external') cover = page.icon.external.url
   if (!cover && page.icon?.type === 'file') cover = page.icon.file.url
 
-  return { pageId: page.id, title, subtitle, author, publisher, rating, tags, cover, startDate, finishDate, no, motivation, bookInfo, afterthought, followUp, aiSummary, hasNote, hasReview }
+  return {
+    pageId: page.id,
+    title, subtitle, author, publisher, rating, tags,
+    cover, startDate, finishDate, no,
+    motivation, bookInfo, afterthought, followUp, aiSummary,
+    hasNote, hasReview,
+  }
 }
 
 async function queryAllPages(filter?: any): Promise<any[]> {
@@ -73,7 +103,7 @@ async function queryAllPages(filter?: any): Promise<any[]> {
   return pages
 }
 
-// ─── Public API ──────────────────────────────────────────
+// ─── Public API ────────────────────────────────────────────────────────────
 
 /** All books (no highlights) — for Library grid */
 export async function getAllBooks(): Promise<Book[]> {
@@ -109,7 +139,11 @@ export async function getBookDetail(pageId: string): Promise<Book> {
   const page = await notion.pages.retrieve({ page_id: pageId })
   const base = parsePage(page)
 
-  const blocksRes = await notion.blocks.children.list({ block_id: pageId, page_size: 100 })
+  const blocksRes = await notion.blocks.children.list({
+    block_id: pageId,
+    page_size: 100,
+  })
+
   const highlights: string[] = []
   for (const block of blocksRes.results) {
     const b = block as any
@@ -124,12 +158,19 @@ export async function getBookDetail(pageId: string): Promise<Book> {
 
 /** All books with highlights — for 節錄重點 tab */
 export async function getAllBooksWithHighlights(): Promise<Book[]> {
-  const pages = await queryAllPages({ property: '筆記', checkbox: { equals: true } })
-  const books: Book[] = []
+  const pages = await queryAllPages({
+    property: '筆記',
+    checkbox: { equals: true },
+  })
 
+  const books: Book[] = []
   for (const page of pages) {
     const base = parsePage(page)
-    const blocksRes = await notion.blocks.children.list({ block_id: page.id, page_size: 100 })
+    const blocksRes = await notion.blocks.children.list({
+      block_id: page.id,
+      page_size: 100,
+    })
+
     const highlights: string[] = []
     for (const block of blocksRes.results) {
       const b = block as any
@@ -138,6 +179,7 @@ export async function getAllBooksWithHighlights(): Promise<Book[]> {
       const text = richText.map((r: any) => r.plain_text).join('').trim()
       if (text.length > 8) highlights.push(text)
     }
+
     if (highlights.length > 0) books.push({ ...base, highlights })
   }
 
@@ -146,5 +188,110 @@ export async function getAllBooksWithHighlights(): Promise<Book[]> {
     if (!b.finishDate) return -1
     return b.finishDate.localeCompare(a.finishDate)
   })
+
   return books
+}
+
+/** Flat list of all excerpts — for 每日精選 */
+export async function getAllExcerptsFlat(): Promise<ExcerptFlat[]> {
+  const books = await getAllBooksWithHighlights()
+  const flat: ExcerptFlat[] = []
+  for (const book of books) {
+    for (const text of book.highlights) {
+      if (text.trim()) {
+        flat.push({
+          bookTitle: book.title,
+          bookCover: book.cover,
+          author: book.author,
+          rating: book.rating,
+          finishDate: book.finishDate,
+          text: text.trim(),
+        })
+      }
+    }
+  }
+  return flat
+}
+
+/** Reading statistics — for 統計 tab */
+export async function getReadingStats(): Promise<ReadingStats> {
+  const pages = await queryAllPages()
+  const books = pages.map(p => parsePage(p))
+
+  const totalBooks = books.length
+  const finished = books.filter(b => b.finishDate)
+  const totalFinished = finished.length
+  const totalReading = books.filter(b => b.startDate && !b.finishDate).length
+  const totalHighlightBooks = books.filter(b => b.hasNote).length
+
+  // By year (finish date)
+  const yearMap: Record<string, number> = {}
+  for (const b of finished) {
+    const year = b.finishDate!.slice(0, 4)
+    yearMap[year] = (yearMap[year] || 0) + 1
+  }
+  const byYear = Object.entries(yearMap)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([year, count]) => ({ year, count }))
+
+  // By tag
+  const tagMap: Record<string, number> = {}
+  for (const b of books) {
+    for (const t of b.tags) {
+      tagMap[t] = (tagMap[t] || 0) + 1
+    }
+  }
+  const byTag = Object.entries(tagMap)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag, count]) => ({ tag, count }))
+
+  // By rating
+  const ratingMap: Record<string, number> = {}
+  for (const b of books) {
+    if (b.rating) {
+      ratingMap[b.rating] = (ratingMap[b.rating] || 0) + 1
+    }
+  }
+  const byRating = Object.entries(ratingMap)
+    .sort((a, b) => b[1] - a[1])
+    .map(([rating, count]) => ({ rating, count }))
+
+  // Avg days, longest, fastest
+  const withDays = finished
+    .filter(b => b.startDate)
+    .map(b => ({
+      title: b.title,
+      days: Math.floor(
+        (new Date(b.finishDate!).getTime() - new Date(b.startDate!).getTime()) / 86400000
+      ),
+    }))
+    .filter(b => b.days >= 0)
+
+  const avgDaysPerBook = withDays.length
+    ? Math.round(withDays.reduce((s, b) => s + b.days, 0) / withDays.length)
+    : 0
+
+  const longestBook = withDays.length
+    ? withDays.reduce((a, b) => (b.days > a.days ? b : a))
+    : null
+
+  const fastestBook = withDays.length
+    ? withDays.reduce((a, b) => (b.days < a.days ? b : a))
+    : null
+
+  const mostTagged = byTag[0] ?? null
+
+  return {
+    totalBooks,
+    totalFinished,
+    totalReading,
+    totalHighlightBooks,
+    byYear,
+    byTag,
+    byRating,
+    avgDaysPerBook,
+    longestBook,
+    fastestBook,
+    mostTagged,
+  }
 }
