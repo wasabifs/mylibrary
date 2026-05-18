@@ -1,11 +1,17 @@
-import { getAllBooks } from '@/lib/notion'
+import { getAllBooks, type Book } from '@/lib/notion'
 import LibraryGrid from '@/components/LibraryGrid'
 import SyncButton from '@/components/SyncButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function LibraryPage() {
-  const books = await getAllBooks()
+  let books: Book[] = []
+  let error = ''
+  try {
+    books = await getAllBooks()
+  } catch (e: any) {
+    error = e.message
+  }
 
   const tagCount: Record<string, number> = {}
   books.forEach(b => b.tags.forEach(t => {
@@ -33,7 +39,15 @@ export default async function LibraryPage() {
           <SyncButton />
         </div>
       </div>
-      <LibraryGrid books={books} allTags={allTags} />
+
+      {error ? (
+        <div style={{ textAlign: 'center', padding: '80px 24px', color: '#9a9080', fontSize: 13 }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
+          載入失敗：{error}
+        </div>
+      ) : (
+        <LibraryGrid books={books} allTags={allTags} />
+      )}
     </div>
   )
 }
