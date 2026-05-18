@@ -1,16 +1,5 @@
-import { getAllBooksWithHighlights, type Book } from '@/lib/notion'
-import LibraryClient from '@/components/LibraryClient'
+import { redirect } from 'next/navigation'
 
-export const revalidate = 3600
-
-export default async function Home() {
-  let books: Book[] = []
-  let error = ''
-  try {
-    books = await getAllBooksWithHighlights()
-  } catch (e: any) {
-    error = e.message
-  }
-
-  return <LibraryClient books={books} error={error} />
+export default function Home() {
+  redirect('/daily')
 }
