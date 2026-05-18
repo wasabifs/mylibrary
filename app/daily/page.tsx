@@ -5,7 +5,12 @@ import SyncButton from '@/components/SyncButton'
 export const dynamic = 'force-dynamic'
 
 export default async function DailyPage() {
-  const excerpts = await getAllExcerptsFlat()
+  let excerpts: Awaited<ReturnType<typeof getAllExcerptsFlat>> = []
+  try {
+    excerpts = await getAllExcerptsFlat()
+  } catch (e) {
+    // silently fail — DailyClient handles empty state
+  }
 
   return (
     <div style={{ minHeight: '100vh' }}>
