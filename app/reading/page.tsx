@@ -1,10 +1,15 @@
-import { getReadingBooks } from '@/lib/notion'
+import { getReadingBooks, type Book } from '@/lib/notion'
 import SyncButton from '@/components/SyncButton'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ReadingPage() {
-  const books = await getReadingBooks()
+  let books: Book[] = []
+  try {
+    books = await getReadingBooks()
+  } catch (e) {
+    // silently fail
+  }
 
   return (
     <div style={{ minHeight: '100vh' }}>
