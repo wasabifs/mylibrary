@@ -1,7 +1,7 @@
 import { getBookDetail } from '@/lib/notion'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
 
 export default async function BookDetailPage({ params }: { params: { id: string } }) {
   let book
@@ -14,28 +14,27 @@ export default async function BookDetailPage({ params }: { params: { id: string 
   const readingDays = book.startDate && book.finishDate
     ? Math.floor((new Date(book.finishDate).getTime() - new Date(book.startDate).getTime()) / 86400000)
     : book.startDate && !book.finishDate
-    ? Math.floor((Date.now() - new Date(book.startDate).getTime()) / 86400000)
-    : null
+      ? Math.floor((Date.now() - new Date(book.startDate).getTime()) / 86400000)
+      : null
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 80 }}>
       {/* Back + Header */}
       <div style={{
         padding: '16px 20px 0',
-        position: 'sticky', top: 0,
-        background: '#0f0e0c', zIndex: 10,
+        position: 'sticky',
+        top: 0,
+        background: '#0f0e0c',
+        zIndex: 10,
         borderBottom: '1px solid #2a2820',
       }}>
-        <a href="/library" style={{ fontSize: 13, color: '#847a68', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
+        <a href="/library" style={{ fontSize: 13, color: '#9a9080', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
           ← 圖書館
         </a>
       </div>
 
       {/* Hero */}
-      <div style={{
-        display: 'flex', gap: 20, padding: '24px 20px 20px',
-        borderBottom: '1px solid #2a2820',
-      }}>
+      <div style={{ display: 'flex', gap: 20, padding: '24px 20px 20px', borderBottom: '1px solid #2a2820' }}>
         <div style={{ flexShrink: 0 }}>
           {book.cover
             ? <img src={book.cover} alt="" style={{ width: 80, height: 116, objectFit: 'cover', borderRadius: 4 }} />
@@ -48,9 +47,9 @@ export default async function BookDetailPage({ params }: { params: { id: string 
             {book.title}
           </h1>
           {book.subtitle && (
-            <p style={{ fontSize: 12, color: '#847a68', lineHeight: 1.5, marginBottom: 8 }}>{book.subtitle}</p>
+            <p style={{ fontSize: 12, color: '#9a9080', lineHeight: 1.5, marginBottom: 8 }}>{book.subtitle}</p>
           )}
-          <div style={{ fontSize: 12, color: '#847a68' }}>
+          <div style={{ fontSize: 12, color: '#9a9080' }}>
             {[book.author, book.publisher].filter(Boolean).join(' · ')}
           </div>
           {book.rating && (
@@ -63,10 +62,7 @@ export default async function BookDetailPage({ params }: { params: { id: string 
       {book.tags.length > 0 && (
         <div style={{ padding: '12px 20px', borderBottom: '1px solid #2a2820', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {book.tags.map(t => (
-            <span key={t} style={{
-              fontSize: 11, color: '#847a68', border: '1px solid #2a2820',
-              borderRadius: 3, padding: '2px 8px',
-            }}>{t}</span>
+            <span key={t} style={{ fontSize: 11, color: '#9a9080', border: '1px solid #2a2820', borderRadius: 3, padding: '2px 8px' }}>{t}</span>
           ))}
         </div>
       )}
@@ -75,22 +71,22 @@ export default async function BookDetailPage({ params }: { params: { id: string 
       <div style={{ padding: '12px 20px', borderBottom: '1px solid #2a2820', display: 'flex', gap: 24 }}>
         {book.startDate && (
           <div>
-            <div style={{ fontSize: 10, color: '#3e3a32', letterSpacing: '0.1em', marginBottom: 2 }}>開始</div>
-            <div style={{ fontSize: 13, color: '#847a68' }}>{book.startDate.replace(/-/g, '/')}</div>
+            <div style={{ fontSize: 10, color: '#6b6355', letterSpacing: '0.1em', marginBottom: 2 }}>開始</div>
+            <div style={{ fontSize: 13, color: '#9a9080' }}>{book.startDate.replace(/-/g, '/')}</div>
           </div>
         )}
         {book.finishDate && (
           <div>
-            <div style={{ fontSize: 10, color: '#3e3a32', letterSpacing: '0.1em', marginBottom: 2 }}>完成</div>
-            <div style={{ fontSize: 13, color: '#847a68' }}>{book.finishDate.replace(/-/g, '/')}</div>
+            <div style={{ fontSize: 10, color: '#6b6355', letterSpacing: '0.1em', marginBottom: 2 }}>完成</div>
+            <div style={{ fontSize: 13, color: '#9a9080' }}>{book.finishDate.replace(/-/g, '/')}</div>
           </div>
         )}
         {readingDays !== null && (
           <div>
-            <div style={{ fontSize: 10, color: '#3e3a32', letterSpacing: '0.1em', marginBottom: 2 }}>
+            <div style={{ fontSize: 10, color: '#6b6355', letterSpacing: '0.1em', marginBottom: 2 }}>
               {book.finishDate ? '花費' : '已讀'}
             </div>
-            <div style={{ fontSize: 13, color: '#847a68' }}>{readingDays} 天</div>
+            <div style={{ fontSize: 13, color: '#9a9080' }}>{readingDays} 天</div>
           </div>
         )}
       </div>
@@ -107,7 +103,15 @@ export default async function BookDetailPage({ params }: { params: { id: string 
       {/* Highlights */}
       {book.highlights.length > 0 && (
         <div style={{ padding: '0 20px' }}>
-          <div style={{ fontSize: 11, color: '#3e3a32', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '20px 0 12px', borderTop: '1px solid #2a2820', marginTop: 4 }}>
+          <div style={{
+            fontSize: 11,
+            color: '#6b6355',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            padding: '20px 0 12px',
+            borderTop: '1px solid #2a2820',
+            marginTop: 4,
+          }}>
             節錄重點 · {book.highlights.length} 條
           </div>
           {book.highlights.map((h, i) => (
@@ -136,7 +140,7 @@ function Section({ label, content }: { label: string; content: string }) {
   if (!content) return null
   return (
     <div style={{ padding: '16px 0', borderTop: '1px solid #2a2820' }}>
-      <div style={{ fontSize: 10, color: '#3e3a32', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
+      <div style={{ fontSize: 10, color: '#6b6355', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
         {label}
       </div>
       <div style={{ fontSize: 13.5, color: '#c4bcac', lineHeight: 1.9, whiteSpace: 'pre-wrap', fontFamily: 'Noto Serif TC, serif' }}>
