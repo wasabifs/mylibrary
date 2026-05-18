@@ -34,14 +34,15 @@ export default function DailyClient({ excerpts }: { excerpts: ExcerptFlat[] }) {
     weekday: 'long',
   })
 
-  const picks = useMemo(() => pickN(excerpts, 3, getTodaySeed()), [excerpts])
+  // 5 excerpts per day
+  const picks = useMemo(() => pickN(excerpts, 5, getTodaySeed()), [excerpts])
 
   return (
     <div style={{ padding: '20px 20px 80px', maxWidth: 560, margin: '0 auto' }}>
       {/* Date */}
       <div style={{
         fontSize: 11,
-        color: '#3e3a32',
+        color: '#6b6355',
         letterSpacing: '0.15em',
         marginBottom: 24,
         paddingTop: 4,
@@ -102,7 +103,7 @@ export default function DailyClient({ excerpts }: { excerpts: ExcerptFlat[] }) {
                   <div style={{
                     fontSize: 12,
                     fontWeight: 500,
-                    color: '#847a68',
+                    color: '#9a9080',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
@@ -111,7 +112,7 @@ export default function DailyClient({ excerpts }: { excerpts: ExcerptFlat[] }) {
                   </div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 2, alignItems: 'center' }}>
                     {item.author && (
-                      <span style={{ fontSize: 11, color: '#3e3a32' }}>{item.author}</span>
+                      <span style={{ fontSize: 11, color: '#6b6355' }}>{item.author}</span>
                     )}
                     {item.rating && (
                       <span style={{ fontSize: 11, color: '#7a6340' }}>{item.rating}</span>
@@ -129,7 +130,7 @@ export default function DailyClient({ excerpts }: { excerpts: ExcerptFlat[] }) {
         <p style={{
           textAlign: 'center',
           fontSize: 11,
-          color: '#3e3a32',
+          color: '#6b6355',
           marginTop: 32,
           letterSpacing: '0.1em',
         }}>
