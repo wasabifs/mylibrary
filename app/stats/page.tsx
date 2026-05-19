@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 const emptyStats: ReadingStats = {
   totalBooks: 0, totalFinished: 0, totalReading: 0,
   totalUnread: 0, totalHighlightBooks: 0, maxHighlightBook: null,
-  byYear: [], byTag: [], byRating: [],
+  byYear: [], byMonth: [], byTag: [], byRating: [],
   avgDaysPerBook: 0, longestBook: null, fastestBook: null, mostTagged: null,
 }
 
