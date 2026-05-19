@@ -45,6 +45,7 @@ export interface ReadingStats {
   totalHighlightBooks: number
   maxHighlightBook: { title: string; count: number } | null
   byYear: { year: string; count: number }[]
+  byMonth: { month: string; count: number }[]   // 新增：月份分佈
   byTag: { tag: string; count: number }[]
   byRating: { rating: string; count: number }[]
   avgDaysPerBook: number
@@ -106,13 +107,32 @@ async function queryAllPages(filter?: any): Promise<any[]> {
 }
 
 // ─── Rating star count helper ───────────────────────────────────────────────
-// Counts the number of filled stars in a rating string like "★★★☆☆"
 function countStars(rating: string): number {
-  // Count filled star characters (★ \u2605) or any common filled star variants
   const filled = (rating.match(/★/g) || []).length
   if (filled > 0) return filled
-  // Fallback: count non-empty chars that might represent stars
   return rating.replace(/[☆\s]/g, '').length
+}
+
+// ─── Fetch all blocks with pagination (breaks 100-block limit) ─────────────
+async function fetchAllBlocks(pageId: string): Promise<string[]> {
+  const highlights: string[] = []
+  let cursor: string | undefined
+  do {
+    const res = await notion.blocks.children.list({
+      block_id: pageId,
+      page_size: 100,
+      ...(cursor ? { start_cursor: cursor } : {}),
+    })
+    for (const block of res.results) {
+      const b = block as any
+      const richText = b[b.type]?.rich_text
+      if (!richText) continue
+      const text = richText.map((r: any) => r.plain_text).join('').trim()
+      if (text.length > 8) highlights.push(text)
+    }
+    cursor = res.has_more ? (res.next_cursor ?? undefined) : undefined
+  } while (cursor)
+  return highlights
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────
@@ -150,21 +170,7 @@ export async function getReadingBooks(): Promise<Book[]> {
 export async function getBookDetail(pageId: string): Promise<Book> {
   const page = await notion.pages.retrieve({ page_id: pageId })
   const base = parsePage(page)
-
-  const blocksRes = await notion.blocks.children.list({
-    block_id: pageId,
-    page_size: 100,
-  })
-
-  const highlights: string[] = []
-  for (const block of blocksRes.results) {
-    const b = block as any
-    const richText = b[b.type]?.rich_text
-    if (!richText) continue
-    const text = richText.map((r: any) => r.plain_text).join('').trim()
-    if (text.length > 8) highlights.push(text)
-  }
-
+  const highlights = await fetchAllBlocks(pageId)
   return { ...base, highlights }
 }
 
@@ -175,25 +181,16 @@ export async function getAllBooksWithHighlights(): Promise<Book[]> {
     checkbox: { equals: true },
   })
 
-  const books: Book[] = []
-  for (const page of pages) {
-    const base = parsePage(page)
-    const blocksRes = await notion.blocks.children.list({
-      block_id: page.id,
-      page_size: 100,
-    })
+  const baseBooks = pages.map(p => parsePage(p))
 
-    const highlights: string[] = []
-    for (const block of blocksRes.results) {
-      const b = block as any
-      const richText = b[b.type]?.rich_text
-      if (!richText) continue
-      const text = richText.map((r: any) => r.plain_text).join('').trim()
-      if (text.length > 8) highlights.push(text)
-    }
+  // 並行抓取所有書的 blocks（支援超過 100 筆）
+  const highlightsArr = await Promise.all(
+    baseBooks.map(b => fetchAllBlocks(b.pageId))
+  )
 
-    if (highlights.length > 0) books.push({ ...base, highlights })
-  }
+  const books: Book[] = baseBooks
+    .map((base, i) => ({ ...base, highlights: highlightsArr[i] }))
+    .filter(b => b.highlights.length > 0)
 
   books.sort((a, b) => {
     if (!a.finishDate) return 1
@@ -294,11 +291,32 @@ export async function getReadingStats(): Promise<ReadingStats> {
 
   const mostTagged = byTag[0] ?? null
 
-  // Book with most highlights (requires highlight count — approximate via hasNote books)
-  // We compute this from the highlight counts we already gather in getAllBooksWithHighlights,
-  // but to avoid extra API calls here we leave maxHighlightBook as null unless already available.
-  // To get real data, use getReadingStatsWithHighlights (future).
-  const maxHighlightBook = null
+  // 月份分佈（1～12 月，跨年度累計完讀數）
+  const monthMap: Record<string, number> = {}
+  for (let m = 1; m <= 12; m++) {
+    monthMap[String(m).padStart(2, '0')] = 0
+  }
+  for (const b of finished) {
+    const month = b.finishDate!.slice(5, 7)
+    monthMap[month] = (monthMap[month] || 0) + 1
+  }
+  const byMonth = Object.entries(monthMap)
+    .sort()
+    .map(([month, count]) => ({ month, count }))
+
+  // 真實節錄條數最多的書：並行抓取有筆記的書的 blocks
+  let maxHighlightBook: { title: string; count: number } | null = null
+  const notesBooks = books.filter(b => b.hasNote)
+  if (notesBooks.length > 0) {
+    const counts = await Promise.all(
+      notesBooks.map(async b => ({
+        title: b.title,
+        count: (await fetchAllBlocks(b.pageId)).length,
+      }))
+    )
+    counts.sort((a, b) => b.count - a.count)
+    maxHighlightBook = counts[0] ?? null
+  }
 
   return {
     totalBooks,
@@ -308,6 +326,7 @@ export async function getReadingStats(): Promise<ReadingStats> {
     totalHighlightBooks,
     maxHighlightBook,
     byYear,
+    byMonth,
     byTag,
     byRating,
     avgDaysPerBook,
