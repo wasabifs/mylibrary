@@ -1,7 +1,7 @@
 import { getAllBooksWithHighlights, type Book } from '@/lib/notion'
 import LibraryClient from '@/components/LibraryClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = false  // 只靠手動 ⟳ 更新
 
 export default async function ExcerptsPage() {
   let books: Book[] = []
