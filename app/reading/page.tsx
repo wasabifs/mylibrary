@@ -1,7 +1,7 @@
 import { getReadingBooks, type Book } from '@/lib/notion'
 import SyncButton from '@/components/SyncButton'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 1800  // 30 分鐘自動更新
 
 export default async function ReadingPage() {
   let books: Book[] = []
