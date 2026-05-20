@@ -2,7 +2,7 @@ import { getAllBooks, type Book } from '@/lib/notion'
 import LibraryGrid from '@/components/LibraryGrid'
 import SyncButton from '@/components/SyncButton'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 1800  // 30 分鐘自動更新
 
 export default async function LibraryPage() {
   let books: Book[] = []
