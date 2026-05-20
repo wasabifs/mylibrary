@@ -2,7 +2,7 @@ import { getAllExcerptsFlat } from '@/lib/notion'
 import DailyClient from '@/components/DailyClient'
 import SyncButton from '@/components/SyncButton'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = false  // 只靠手動 ⟳ 更新
 
 export default async function DailyPage() {
   let excerpts: Awaited<ReturnType<typeof getAllExcerptsFlat>> = []
