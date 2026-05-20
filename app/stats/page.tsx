@@ -2,7 +2,7 @@ import { getReadingStats, type ReadingStats } from '@/lib/notion'
 import StatsClient from '@/components/StatsClient'
 import SyncButton from '@/components/SyncButton'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = false  // 只靠手動 ⟳ 更新（stats 計算量大）
 
 const emptyStats: ReadingStats = {
   totalBooks: 0, totalFinished: 0, totalReading: 0,
