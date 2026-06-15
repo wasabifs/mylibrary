@@ -42,11 +42,11 @@ export default function LibraryGrid({ books, allTags }: { books: Book[]; allTags
         else if (!b.finishDate) result = -1
         else result = a.finishDate.localeCompare(b.finishDate)
       } else {
-        // no
-        const na = parseInt(a.no.replace(/\D/g, '')) || 0
-        const nb = parseInt(b.no.replace(/\D/g, '')) || 0
-        result = na - nb
-      }
+      // 加入順序：保留 Notion 原始陣列順序（資料庫由上到下）
+      const ia = books.indexOf(a)
+      const ib = books.indexOf(b)
+      result = ia - ib
+    }
       return sortDir === 'desc' ? -result : result
     })
 
