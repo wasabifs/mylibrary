@@ -42,16 +42,16 @@ export default function LibraryGrid({ books, allTags }: { books: Book[]; allTags
         else if (!b.finishDate) result = -1
         else result = a.finishDate.localeCompare(b.finishDate)
       } else if (sort === 'num') {
-      // 編號：按 No. 欄位數字排序（#202101 → 202101）
-      const na = parseInt(a.no.replace(/\D/g, ''), 10) || 0
-      const nb = parseInt(b.no.replace(/\D/g, ''), 10) || 0
-      result = na - nb
-    } else {
-      // 加入順序：保留 Notion 原始陣列順序（資料庫由上到下）
-      const ia = books.indexOf(a)
-      const ib = books.indexOf(b)
-      result = ia - ib
-    }
+        // 編號：按 No. 欄位數字排序（#202101 → 202101）
+        const na = parseInt(a.no.replace(/\D/g, ''), 10) || 0
+        const nb = parseInt(b.no.replace(/\D/g, ''), 10) || 0
+        result = na - nb
+      } else {
+        // 加入順序：保留 Notion 原始陣列順序（資料庫由上到下）
+        const ia = books.indexOf(a)
+        const ib = books.indexOf(b)
+        result = ia - ib
+      }
       return sortDir === 'desc' ? -result : result
     })
 
@@ -124,13 +124,12 @@ export default function LibraryGrid({ books, allTags }: { books: Book[]; allTags
         }}>
           <span style={{ fontSize: 10, color: '#3e3a32', letterSpacing: '0.1em', flexShrink: 0 }}>排序</span>
           {([
-           {([
-      ['num', '編號'],
-      ['no', '加入順序'],
-      ['start', '開始日期'],
-      ['finish', '完讀日期'],
-    ] as [SortKey, string][]).map(([key, label]) => (
-            <button key={key} onClick={() => setSort(key)} style={btnStyle(sort === key)}>
+            ['num', '編號'],
+            ['no', '加入順序'],
+            ['start', '開始日期'],
+            ['finish', '完讀日期'],
+          ] as [SortKey, string][]).map(([key, label]) => (
+            <button key={key} onClick={() => setSort(key as SortKey)} style={btnStyle(sort === key)}>
               {label}
             </button>
           ))}
