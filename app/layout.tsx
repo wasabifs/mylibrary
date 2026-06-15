@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata, Viewport } from 'next'
 import NavActive from '@/components/NavActive'
 import './globals.css'
@@ -30,27 +31,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NavActive />
         <div className="app-shell">{children}</div>
         <nav className="bottom-nav">
-          <a href="/library" className="nav-item">
-            <span className="nav-icon">⊞</span>
-            <span className="nav-label">圖書館</span>
-          </a>
-          <a href="/reading" className="nav-item">
-            <span className="nav-icon">◎</span>
-            <span className="nav-label">閱讀中</span>
-          </a>
-          <a href="/excerpts" className="nav-item">
-            <span className="nav-icon">❝</span>
-            <span className="nav-label">節錄</span>
-          </a>
-          <a href="/daily" className="nav-item">
-            <span className="nav-icon">✦</span>
-            <span className="nav-label">每日</span>
-          </a>
-          <a href="/stats" className="nav-item">
-            <span className="nav-icon">◈</span>
-            <span className="nav-label">統計</span>
-          </a>
-        </nav>
+      <Link href="/library" className="nav-item">
+        <span className="nav-icon">⊞</span>
+        <span className="nav-label">圖書館</span>
+      </Link>
+      <Link href="/reading" className="nav-item">
+        <span className="nav-icon">◎</span>
+        <span className="nav-label">閱讀中</span>
+      </Link>
+      <Link href="/excerpts" className="nav-item">
+        <span className="nav-icon">❝</span>
+        <span className="nav-label">節錄</span>
+      </Link>
+      <Link href="/daily" className="nav-item">
+        <span className="nav-icon">✦</span>
+        <span className="nav-label">每日</span>
+      </Link>
+      <Link href="/stats" className="nav-item">
+        <span className="nav-icon">◈</span>
+        <span className="nav-label">統計</span>
+      </Link>
+    </nav>
       </body>
     </html>
   )
