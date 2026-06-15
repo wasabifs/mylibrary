@@ -140,13 +140,7 @@ async function fetchAllBlocks(pageId: string): Promise<string[]> {
 /** All books (no highlights) — for Library grid */
 export async function getAllBooks(): Promise<Book[]> {
   const pages = await queryAllPages()
-  return pages
-    .map(p => ({ ...parsePage(p), highlights: [] }))
-    .sort((a, b) => {
-      const na = parseInt(a.no.replace('#', '')) || 0
-      const nb = parseInt(b.no.replace('#', '')) || 0
-      return nb - na
-    })
+  return pages.map(p => ({ ...parsePage(p), highlights: [] }))
 }
 
 /** Books currently being read (has Start, no Finish) */
